@@ -19,7 +19,7 @@ const today = new Date().toLocaleDateString('en-GB', {
   year: 'numeric',
 })
 
-export default function Header({ theme, onToggleTheme, onOpenMobileMenu }) {
+export default function Header({ theme, user, onLogout, onToggleTheme, onOpenMobileMenu }) {
   const page = useCurrentPage()
 
   return (
@@ -40,6 +40,7 @@ export default function Header({ theme, onToggleTheme, onOpenMobileMenu }) {
           <span className="live-dot" />
           LIVE
         </div>
+        {user?.staffName && <span className="topbar-user">{user.staffName}</span>}
         <button
           type="button"
           className="topbar-theme-btn"
@@ -48,7 +49,7 @@ export default function Header({ theme, onToggleTheme, onOpenMobileMenu }) {
         >
           {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
         </button>
-        <button type="button" className="topbar-logout" title="Sign out">
+        <button type="button" className="topbar-logout" title="Sign out" onClick={onLogout}>
           <LogOut size={16} />
         </button>
       </div>

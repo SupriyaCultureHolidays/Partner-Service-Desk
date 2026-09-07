@@ -58,6 +58,13 @@
   white-space: nowrap;
 }
 
+.topbar-user {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
 .topbar-live {
   display: flex;
   align-items: center;

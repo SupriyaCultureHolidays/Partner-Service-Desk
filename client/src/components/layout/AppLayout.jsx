@@ -4,7 +4,7 @@ import Header from './Header'
 import Sidebar from './Sidebar'
 import './AppLayout.css'
 
-export default function AppLayout() {
+export default function AppLayout({ user, onLogout }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem('psd_sidebar') === 'collapsed')
   const [theme, setTheme] = useState(() => localStorage.getItem('psd_theme') || 'dark')
@@ -34,6 +34,8 @@ export default function AppLayout() {
       <div className="main-area">
         <Header
           theme={theme}
+          user={user}
+          onLogout={onLogout}
           onToggleTheme={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
           onOpenMobileMenu={() => setMobileOpen(true)}
         />
