@@ -1,0 +1,47 @@
+.dashboard-status {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+}
+
+.dashboard-status-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.dashboard-status-dot {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--amber);
+  animation: blink 1s ease-in-out infinite;
+}
+
+.dashboard-status-title {
+  margin: 0;
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.dashboard-status-text {
+  margin: 2px 0 0;
+  font-size: 0.78rem;
+  color: var(--text-3);
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
