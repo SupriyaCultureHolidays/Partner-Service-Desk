@@ -58,12 +58,6 @@
   white-space: nowrap;
 }
 
-.topbar-user-email {
-  font-size: 0.8rem;
-  color: var(--text-2);
-  white-space: nowrap;
-}
-
 .topbar-live {
   display: flex;
   align-items: center;

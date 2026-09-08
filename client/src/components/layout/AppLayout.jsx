@@ -35,7 +35,6 @@ export default function AppLayout({ user, onLogout }) {
       <div className="main-area">
         <Header
           theme={theme}
-          user={user}
           onLogout={onLogout}
           onToggleTheme={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
           onOpenMobileMenu={() => setMobileOpen(true)}

@@ -19,7 +19,7 @@ const today = new Date().toLocaleDateString('en-GB', {
   year: 'numeric',
 })
 
-export default function Header({ theme, user, onLogout, onToggleTheme, onOpenMobileMenu }) {
+export default function Header({ theme, onLogout, onToggleTheme, onOpenMobileMenu }) {
   const page = useCurrentPage()
 
   return (
@@ -40,7 +40,6 @@ export default function Header({ theme, user, onLogout, onToggleTheme, onOpenMob
           <span className="live-dot" />
           LIVE
         </div>
-        {user?.email && <span className="topbar-user-email">{user.email}</span>}
         <button
           type="button"
           className="topbar-theme-btn"
