@@ -137,7 +137,7 @@ function App() {
 
       <Route element={<ProtectedRoute isAuthed={!!token} />}>
         <Route element={<AppLayout user={user} onLogout={handleLogout} />}>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<Dashboard user={user} />} />
           <Route path="/tickets" element={<Tickets />} />
           <Route path="/partners" element={<Partners />} />
           <Route path="/reports" element={<Reports />} />

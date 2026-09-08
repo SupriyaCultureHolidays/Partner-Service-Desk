@@ -2,32 +2,26 @@ import { useNavigate } from 'react-router-dom'
 import {
   Activity,
   AlertTriangle,
+  ArrowDown,
   ArrowRight,
-  Award,
+  ArrowUp,
   CheckCircle2,
+  ChevronDown,
   Clock,
+  Flame,
+  Lightbulb,
   MessageSquare,
   PieChart,
-  Plus,
-  Star,
+  ShieldCheck,
+  Smile,
+  Sparkles,
   Ticket,
-  TrendingDown,
   TrendingUp,
-  UserPlus,
+  UserCog,
   Users,
-  XCircle,
 } from 'lucide-react'
-import { useHealth } from '../../hooks/useHealth'
 import { avatarTone, initials } from '../../utils/avatar'
 import './Dashboard.css'
-
-const TONE_COLOR = {
-  blue: 'var(--accent)',
-  purple: 'var(--purple)',
-  green: 'var(--green)',
-  amber: 'var(--amber)',
-  red: 'var(--red)',
-}
 
 const TREND = [
   { day: 'Mon', value: 14 },
@@ -42,141 +36,216 @@ const TREND = [
 const METRICS = [
   {
     icon: Ticket,
-    tone: 'blue',
-    value: '24',
+    tone: 'red',
+    value: '12',
     label: 'Open Tickets',
-    hint: 'Needs response',
-    spark: [30, 27, 29, 25, 26, 22, 24],
-  },
-  {
-    icon: Users,
-    tone: 'purple',
-    value: '42',
-    label: 'Active Partners',
-    hint: 'Across 18 countries',
-    spark: [36, 37, 38, 39, 40, 41, 42],
-  },
-  {
-    icon: CheckCircle2,
-    tone: 'green',
-    value: '96',
-    label: 'Resolved',
-    hint: 'This month',
-    trend: { up: true, label: '+12%' },
-    spark: [62, 68, 74, 80, 85, 90, 96],
+    delta: { direction: 'up', good: false, label: '+8%' },
+    context: 'vs yesterday',
   },
   {
     icon: Clock,
     tone: 'amber',
+    value: '7',
+    label: 'In Progress',
+    delta: { direction: 'down', good: true, label: '-3%' },
+    context: 'vs yesterday',
+  },
+  {
+    icon: CheckCircle2,
+    tone: 'green',
+    value: '23',
+    label: 'Resolved Today',
+    delta: { direction: 'up', good: true, label: '+18%' },
+    context: 'vs yesterday',
+  },
+  {
+    icon: ShieldCheck,
+    tone: 'purple',
+    value: '94%',
+    label: 'SLA Health',
+    badge: 'Excellent',
+  },
+  {
+    icon: Clock,
+    tone: 'blue',
     value: '1.8h',
     label: 'Avg. Response',
-    hint: 'Last 7 days',
-    trend: { up: true, label: '-18%' },
-    spark: [2.6, 2.5, 2.3, 2.2, 2.0, 1.9, 1.8],
+    delta: { direction: 'down', good: true, label: '-24m' },
+    context: 'vs yesterday',
+  },
+  {
+    icon: Smile,
+    tone: 'teal',
+    value: '96%',
+    label: 'CSAT',
+    delta: { direction: 'up', good: true, label: '+2%' },
+    context: 'vs last 7 days',
   },
 ]
 
-const PRIORITY_BREAKDOWN = [
-  { label: 'Urgent', value: 18, tone: 'red' },
-  { label: 'High', value: 27, tone: 'amber' },
-  { label: 'Medium', value: 34, tone: 'blue' },
-  { label: 'Low', value: 21, tone: 'gray' },
-]
-
-const PRIORITY_DONUT_COLOR = {
-  red: 'var(--red)',
-  amber: 'var(--amber)',
-  blue: 'var(--accent)',
-  gray: '#94a3b8',
+const ATTENTION_TAG = {
+  Urgent: { label: 'URGENT', tone: 'red' },
+  'SLA Risk': { label: 'SLA RISK', tone: 'amber' },
+  Waiting: { label: 'WAITING', tone: 'blue' },
+  Info: { label: 'INFO', tone: 'purple' },
 }
 
-const priorityDonutGradient = (() => {
+const ATTENTION_REQUIRED = [
+  {
+    id: 'TCK-1042',
+    tag: 'Urgent',
+    partner: 'Sunrise Tours & Travel',
+    subject: 'Bali itinerary changes for Roberts group',
+    meta: '2h ago · Open',
+    action: 'View Ticket',
+  },
+  {
+    id: 'TCK-1031',
+    tag: 'SLA Risk',
+    partner: 'Emerald Isle Journeys',
+    subject: 'Payment gateway error during checkout',
+    meta: '38m left · In Progress',
+    action: 'Take Action',
+  },
+  {
+    id: 'TCK-1041',
+    tag: 'Waiting',
+    partner: 'Nusantara Escapes',
+    subject: 'Refund request for cancelled ATV activity',
+    meta: '5h ago · Open',
+    action: 'View Ticket',
+  },
+  {
+    id: 'TCK-1035',
+    tag: 'Info',
+    partner: 'Pacific Rim Adventures',
+    subject: 'Hotel upgrade confirmation for anniversary trip',
+    meta: '1h ago · In Progress',
+    action: 'View Ticket',
+  },
+  {
+    id: 'TCK-1039',
+    tag: 'Waiting',
+    partner: 'Sunrise Tours & Travel',
+    subject: 'Flight details missing for Thailand leg',
+    meta: '7h ago · Open',
+    action: 'View Ticket',
+  },
+]
+
+const DISTRIBUTION = [
+  { label: 'Open', value: 32, tone: 'blue', trend: { up: false, label: '-2%' } },
+  { label: 'In Progress', value: 21, tone: 'amber', trend: { up: true, label: '+3%' } },
+  { label: 'Resolved', value: 40, tone: 'green', trend: { up: true, label: '+5%' } },
+  { label: 'Closed', value: 7, tone: 'purple', trend: { up: true, label: '+1%' } },
+]
+const DISTRIBUTION_TOTAL = 128
+const DISTRIBUTION_COLOR = {
+  blue: 'var(--accent)',
+  amber: 'var(--amber)',
+  green: 'var(--green)',
+  purple: 'var(--purple)',
+}
+const distributionGradient = (() => {
   let cursor = 0
-  const stops = PRIORITY_BREAKDOWN.map((s) => {
+  const stops = DISTRIBUTION.map((s) => {
     const start = cursor
     cursor += s.value
-    return `${PRIORITY_DONUT_COLOR[s.tone]} ${start}% ${cursor}%`
+    return `${DISTRIBUTION_COLOR[s.tone]} ${start}% ${cursor}%`
   })
   return `conic-gradient(${stops.join(', ')})`
 })()
 
-const NEEDS_ATTENTION = [
-  {
-    id: 'TCK-1042',
-    partner: 'Sunrise Tours & Travel',
-    subject: 'Bali itinerary changes for Roberts group',
-    priority: 'Urgent',
-    time: '2h ago',
-  },
-  {
-    id: 'TCK-1031',
-    partner: 'Emerald Isle Journeys',
-    subject: 'Payment gateway error during checkout',
-    priority: 'Urgent',
-    time: '2d ago',
-  },
-  {
-    id: 'TCK-1039',
-    partner: 'Sunrise Tours & Travel',
-    subject: 'Flight details missing for Thailand leg',
-    priority: 'High',
-    time: '7h ago',
-  },
-]
-
-const PRIORITY_TONE = {
-  Urgent: 'red',
-  High: 'amber',
-  Medium: 'blue',
-  Low: 'gray',
-}
-
 const TOP_PARTNERS = [
-  { name: 'Sunrise Tours & Travel', tier: 'Gold', rating: 4.9, bookings: 24 },
-  { name: 'Nusantara Escapes', tier: 'Gold', rating: 4.8, bookings: 31 },
-  { name: 'Pacific Rim Adventures', tier: 'Silver', rating: 4.6, bookings: 18 },
-  { name: 'Golden Gate Holidays', tier: 'Silver', rating: 4.5, bookings: 12 },
+  { name: 'Sunrise Tours & Travel', tickets: 18, trend: { up: true, label: '+12%' } },
+  { name: 'Golden Gate Holidays', tickets: 14, trend: { up: true, label: '+6%' } },
+  { name: 'Nusantara Escapes', tickets: 11, trend: { up: true, label: '+3%' } },
+  { name: 'Pacific Rim Adventures', tickets: 9, trend: { up: false, label: '-2%' } },
+  { name: 'Emerald Isle Journeys', tickets: 6, trend: { up: false, label: '-5%' } },
+]
+const maxPartnerTickets = Math.max(...TOP_PARTNERS.map((p) => p.tickets))
+
+const TEAM_PERFORMANCE = [
+  { name: 'Harsit Sharma', role: 'Support Agent', resolved: 47, satisfaction: 96 },
+  { name: 'Dipak Kalal', role: 'Operations Manager', resolved: 41, satisfaction: 98 },
+  { name: 'Ayesha Khan', role: 'Sales Executive', resolved: 34, satisfaction: 91 },
+]
+const maxResolved = Math.max(...TEAM_PERFORMANCE.map((p) => p.resolved))
+
+const AI_INSIGHTS = [
+  {
+    icon: TrendingUp,
+    tone: 'green',
+    text: (
+      <>
+        <strong>Sunrise Tours</strong> has 42% more tickets than their weekly average.
+      </>
+    ),
+    action: 'View details',
+    to: '/tickets?partner=Sunrise%20Tours%20%26%20Travel',
+  },
+  {
+    icon: AlertTriangle,
+    tone: 'amber',
+    text: <>2 tickets may breach SLA today.</>,
+    action: 'Take action',
+    to: '/tickets',
+  },
+  {
+    icon: TrendingUp,
+    tone: 'blue',
+    text: <>Payment-related issues increased 18% this week.</>,
+    action: 'View report',
+    to: '/reports',
+  },
 ]
 
-const TIER_TONE = { Gold: 'amber', Silver: 'gray', Bronze: 'purple' }
-const maxBookings = Math.max(...TOP_PARTNERS.map((p) => p.bookings))
-
-const RECENT_ACTIVITY = [
+const LIVE_ACTIVITY = [
   {
-    partner: 'Sunrise Tours & Travel',
-    action: 'sent a new message on',
-    ticket: 'TCK-1042',
-    time: '2h ago',
-    icon: MessageSquare,
-    tone: 'blue',
-  },
-  {
-    partner: 'Nusantara Escapes',
-    action: 'refund approved on',
-    ticket: 'TCK-1041',
-    time: '5h ago',
-    icon: Clock,
-    tone: 'amber',
-  },
-  {
-    partner: 'Golden Gate Holidays',
-    action: 'ticket resolved —',
-    ticket: 'TCK-1024',
-    time: '4d ago',
     icon: CheckCircle2,
     tone: 'green',
+    title: 'Ticket resolved',
+    detail: 'Golden Gate Holidays (TCK-1024)',
+    time: '4m ago',
   },
   {
-    partner: 'Emerald Isle Journeys',
-    action: 'urgent ticket opened —',
-    ticket: 'TCK-1031',
-    time: '2d ago',
-    icon: Ticket,
+    icon: Flame,
     tone: 'red',
+    title: 'Urgent ticket opened',
+    detail: 'Sunrise Tours & Travel (TCK-1042)',
+    time: '12m ago',
+  },
+  {
+    icon: MessageSquare,
+    tone: 'blue',
+    title: 'New message',
+    detail: 'Nusantara Escapes (TCK-1041)',
+    time: '18m ago',
+  },
+  {
+    icon: AlertTriangle,
+    tone: 'amber',
+    title: 'SLA warning',
+    detail: 'Emerald Isle Journeys (TCK-1031)',
+    time: '38m ago',
+  },
+  {
+    icon: UserCog,
+    tone: 'purple',
+    title: 'Partner updated',
+    detail: 'Pacific Rim Adventures',
+    time: '1h ago',
+  },
+  {
+    icon: CheckCircle2,
+    tone: 'green',
+    title: 'Ticket closed',
+    detail: 'Andes Trail Co. (TCK-1028)',
+    time: '3h ago',
   },
 ]
 
-function SectionHeader({ icon: Icon, tone = 'blue', title, sub }) {
+function SectionHeader({ icon: Icon, tone = 'blue', title, sub, right }) {
   return (
     <div className="dash-card-header">
       <div className={`dash-header-icon dash-header-icon-${tone}`}>
@@ -186,80 +255,44 @@ function SectionHeader({ icon: Icon, tone = 'blue', title, sub }) {
         <h3>{title}</h3>
         {sub && <span className="dash-card-sub">{sub}</span>}
       </div>
+      {right && <div className="dash-card-header-right">{right}</div>}
     </div>
   )
 }
 
-function linePath(values, width, height, padY = 4) {
-  const max = Math.max(...values)
-  const min = Math.min(...values)
-  const range = max - min || 1
+function HeaderLink({ children, onClick }) {
+  return (
+    <button type="button" className="dash-header-link" onClick={onClick}>
+      {children}
+      <ArrowRight size={12} />
+    </button>
+  )
+}
+
+function linePath(values, width, height, max, padTop = 10, padBottom = 20) {
   const step = width / (values.length - 1)
-  return values.map((v, i) => {
-    const x = i * step
-    const y = height - padY - ((v - min) / range) * (height - padY * 2)
-    return { x, y }
-  })
-}
-
-function Sparkline({ data, tone }) {
-  const width = 100
-  const height = 34
-  const color = TONE_COLOR[tone]
-  const points = linePath(data, width, height)
-  const d = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ')
-  const area = `${d} L ${width} ${height} L 0 ${height} Z`
-  const gradId = `spark-${tone}`
-
-  return (
-    <svg className="dash-metric-spark" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
-      <defs>
-        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path d={area} fill={`url(#${gradId})`} />
-      <path d={d} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function MetricCard({ icon: Icon, tone, value, label, hint, trend, spark }) {
-  return (
-    <div className={`dash-metric dash-metric-${tone}`}>
-      <div className="dash-metric-head">
-        <div className="dash-metric-icon">
-          <Icon size={19} />
-        </div>
-        {trend && (
-          <span className={`dash-metric-trend ${trend.up ? 'dash-metric-trend-up' : 'dash-metric-trend-down'}`}>
-            {trend.up ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
-            {trend.label}
-          </span>
-        )}
-      </div>
-      <div className="dash-metric-value">{value}</div>
-      <div className="dash-metric-label">{label}</div>
-      {hint && <div className="dash-metric-hint">{hint}</div>}
-      <Sparkline data={spark} tone={tone} />
-    </div>
-  )
+  return values.map((v, i) => ({
+    x: i * step,
+    y: height - padBottom - (v / max) * (height - padTop - padBottom),
+  }))
 }
 
 function TrendChart({ data }) {
   const width = 280
-  const height = 208
-  const padX = 8
+  const height = 190
+  const padX = 26
+  const niceMax = 30
+  const ticks = [0, 10, 20, 30]
+
   const points = linePath(
     data.map((d) => d.value),
-    width - padX * 2,
+    width - padX,
     height,
-    14,
+    niceMax,
   ).map((p, i) => ({ ...p, x: p.x + padX, ...data[i] }))
 
   const path = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
-  const area = `${path} L ${points[points.length - 1].x} ${height} L ${points[0].x} ${height} Z`
+  const area = `${path} L ${points[points.length - 1].x} ${height - 20} L ${points[0].x} ${height - 20} Z`
 
   return (
     <svg className="dash-trend-svg" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
@@ -269,166 +302,229 @@ function TrendChart({ data }) {
           <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
         </linearGradient>
       </defs>
-      {[0.25, 0.5, 0.75].map((f) => (
-        <line
-          key={f}
-          x1={padX}
-          x2={width - padX}
-          y1={height * f}
-          y2={height * f}
-          stroke="var(--border-soft)"
-          strokeWidth="1"
-        />
-      ))}
+      {ticks.map((t) => {
+        const y = height - 20 - (t / niceMax) * (height - 30)
+        return (
+          <g key={t}>
+            <line x1={padX} x2={width} y1={y} y2={y} stroke="var(--border-soft)" strokeWidth="1" />
+            <text x={0} y={y + 3} fontSize="9" fill="var(--text-3)">
+              {t}
+            </text>
+          </g>
+        )
+      })}
       <path d={area} fill="url(#dashTrendFill)" />
       <path d={path} fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
       {points.map((p) => (
         <circle key={p.day} cx={p.x} cy={p.y} r="3.4" fill="var(--bg)" stroke="var(--accent)" strokeWidth="2" />
       ))}
+      {points.map((p) => (
+        <text key={`${p.day}-label`} x={p.x} y={height - 4} fontSize="9" textAnchor="middle" fill="var(--text-3)">
+          {p.day}
+        </text>
+      ))}
     </svg>
   )
 }
 
-export default function Dashboard() {
+function MetricCard({ icon: Icon, tone, value, label, delta, context, badge }) {
+  return (
+    <div className={`dash-metric dash-metric-${tone}`}>
+      <div className="dash-metric-icon">
+        <Icon size={19} />
+      </div>
+      <div className="dash-metric-value">{value}</div>
+      <div className="dash-metric-label">{label}</div>
+      {badge ? (
+        <span className="dash-metric-badge">{badge}</span>
+      ) : (
+        <div className={`dash-metric-delta ${delta.good ? 'dash-delta-good' : 'dash-delta-bad'}`}>
+          {delta.direction === 'up' ? <ArrowUp size={11} /> : <ArrowDown size={11} />}
+          {delta.label}
+          <span className="dash-metric-context">{context}</span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default function Dashboard({ user }) {
   const navigate = useNavigate()
-  const { data, isLoading, isError } = useHealth()
 
-  const weekTotal = TREND.reduce((sum, d) => sum + d.value, 0)
-  const dailyAvg = Math.round(weekTotal / TREND.length)
-  const today = TREND[TREND.length - 1]
-  const peak = TREND.reduce((best, d) => (d.value > best.value ? d : best), TREND[0])
-  const weekTrendUp = today.value >= dailyAvg
-
-  const openTotal = PRIORITY_BREAKDOWN.reduce((sum, p) => (p.label !== 'Low' ? sum + p.value : sum), 0)
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
+  const firstName = (user?.userID || user?.username || '').split(/[\s._-]/)[0] || 'there'
 
   return (
     <div className="page">
+      <div className="card dash-hero">
+        <div className="dash-hero-text">
+          <h2>
+            {greeting}, {firstName} <span className="dash-hero-wave">👋</span>
+          </h2>
+          <p>Here's what's happening with partner support today.</p>
+        </div>
+
+        <div className="dash-hero-tip">
+          <Lightbulb size={16} />
+          <div>
+            <strong>Keep up the great work!</strong>
+            <span>Resolution rate is 12% higher than last week.</span>
+          </div>
+        </div>
+
+      </div>
+
       <div className="stats-grid dash-metrics-grid">
         {METRICS.map((m) => (
           <MetricCard key={m.label} {...m} />
         ))}
       </div>
 
-      <div className="card dash-quickbar">
-        <div className="dash-quick-actions">
-          <button type="button" className="dash-quick-btn" onClick={() => navigate('/tickets')}>
-            <Plus size={15} />
-            New ticket
-          </button>
-          <button type="button" className="dash-quick-btn dash-quick-btn-ghost" onClick={() => navigate('/partners')}>
-            <UserPlus size={15} />
-            Add partner
-          </button>
-          <button type="button" className="dash-quick-btn dash-quick-btn-ghost" onClick={() => navigate('/reports')}>
-            <Activity size={15} />
-            View reports
-          </button>
-        </div>
-
-        <div className={`dash-status-pill ${isLoading ? 'dash-status-pending' : isError ? 'dash-status-error' : 'dash-status-ok'}`}>
-          {isLoading && <span className="dash-status-dot" />}
-          {!isLoading && !isError && <CheckCircle2 size={14} />}
-          {!isLoading && isError && <XCircle size={14} />}
-          <span>
-            {isLoading && 'Checking API…'}
-            {!isLoading && !isError && `API connected · ${data?.status}`}
-            {!isLoading && isError && 'API unreachable'}
-          </span>
-        </div>
-      </div>
-
-      <div className="dash-row">
-        <div className="card dash-card dash-card-accent-blue">
-          <SectionHeader icon={TrendingUp} tone="blue" title="Tickets this week" sub="Last 7 days" />
-
-          <TrendChart data={TREND} />
-          <div className="dash-trend-labels">
-            {TREND.map((d) => (
-              <span key={d.day}>{d.day}</span>
+      <div className="dash-bento">
+        <div className="card dash-card dash-card-accent-red dash-cell-attn">
+          <SectionHeader
+            icon={Flame}
+            tone="red"
+            title="Attention Required"
+            right={<HeaderLink onClick={() => navigate('/tickets')}>View all</HeaderLink>}
+          />
+          <div className="dash-attn-list">
+            {ATTENTION_REQUIRED.map((t) => (
+              <div className="dash-attn-row" key={t.id}>
+                <div className="dash-attn-main">
+                  <span className={`dash-attn-tag dash-attn-tag-${ATTENTION_TAG[t.tag].tone}`}>
+                    {ATTENTION_TAG[t.tag].label}
+                  </span>
+                  <span className="dash-attn-partner">{t.partner}</span>
+                  <p className="dash-attn-subject">{t.subject}</p>
+                  <span className="dash-attn-meta">
+                    {t.id} · {t.meta}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className={`dash-attn-action ${t.tag === 'SLA Risk' ? 'dash-attn-action-warn' : ''}`}
+                  onClick={() => navigate(`/tickets?partner=${encodeURIComponent(t.partner)}`)}
+                >
+                  {t.action}
+                  <ArrowRight size={12} />
+                </button>
+              </div>
             ))}
           </div>
-
-          <div className="dash-trend-chips">
-            <div className="dash-chip">
-              <span className="dash-chip-value">{today.value}</span>
-              <span className="dash-chip-label">Today</span>
-            </div>
-            <div className="dash-chip">
-              <span className="dash-chip-value">{dailyAvg}</span>
-              <span className="dash-chip-label">Daily avg</span>
-            </div>
-            <div className="dash-chip">
-              <span className="dash-chip-value">{peak.value}</span>
-              <span className="dash-chip-label">Peak · {peak.day}</span>
-            </div>
-          </div>
-
-          <div className="dash-trend-footer">
-            <div>
-              <span className="dash-trend-total">{weekTotal}</span>
-              <span className="dash-trend-total-label">tickets this week</span>
-            </div>
-            <span className={`dash-trend-change ${weekTrendUp ? 'dash-trend-change-up' : 'dash-trend-change-down'}`}>
-              <TrendingUp size={12} />
-              vs. weekly average
-            </span>
-          </div>
         </div>
 
-        <div className="dash-col">
-          <div className="card dash-card dash-card-accent-purple dash-mini-card">
-            <SectionHeader icon={PieChart} tone="purple" title="Priority mix" sub="Open tickets" />
+        <div className="card dash-card dash-card-accent-blue dash-cell-activity">
+          <SectionHeader
+            icon={TrendingUp}
+            tone="blue"
+            title="Ticket Activity"
+            right={
+              <span className="dash-header-static">
+                Last 7 days
+                <ChevronDown size={12} />
+              </span>
+            }
+          />
+          <TrendChart data={TREND} />
+        </div>
+
+        <div className="card dash-card dash-card-accent-purple dash-cell-distribution dash-card-center">
+          <SectionHeader icon={PieChart} tone="purple" title="Ticket Distribution" />
+          <div className="dash-card-fill">
             <div className="dash-mini-donut-wrap">
-              <div className="dash-mini-donut" style={{ background: priorityDonutGradient }}>
+              <div className="dash-mini-donut" style={{ background: distributionGradient }}>
                 <div className="dash-mini-donut-hole">
-                  <span className="dash-mini-donut-total">{openTotal}</span>
-                  <span className="dash-mini-donut-total-label">need action</span>
+                  <span className="dash-mini-donut-total">{DISTRIBUTION_TOTAL}</span>
+                  <span className="dash-mini-donut-total-label">Total</span>
                 </div>
               </div>
               <div className="dash-mini-legend">
-                {PRIORITY_BREAKDOWN.map((p) => (
-                  <div className="dash-mini-legend-row" key={p.label}>
-                    <span className={`dash-mini-dot dash-mini-dot-${p.tone}`} />
-                    <span className="dash-mini-legend-label">{p.label}</span>
-                    <span className="dash-mini-legend-pct">{p.value}%</span>
+                {DISTRIBUTION.map((s) => (
+                  <div className="dash-mini-legend-row" key={s.label}>
+                    <span className={`dash-mini-dot dash-mini-dot-${s.tone}`} />
+                    <span className="dash-mini-legend-label">{s.label}</span>
+                    <div className="dash-mini-legend-stats">
+                      <span className="dash-mini-legend-pct">{s.value}%</span>
+                      <span className={`dash-mini-legend-trend ${s.trend.up ? 'dash-delta-good' : 'dash-delta-bad'}`}>
+                        {s.trend.up ? <ArrowUp size={8} /> : <ArrowDown size={8} />}
+                        {s.trend.label}
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
           </div>
+        </div>
 
-          <div className="card dash-card dash-card-accent-red dash-mini-card">
-            <SectionHeader icon={AlertTriangle} tone="red" title="Needs attention" sub={`${NEEDS_ATTENTION.length} tickets`} />
-            <div className="dash-attention-list">
-              {NEEDS_ATTENTION.map((t) => (
-                <button
-                  type="button"
-                  className="dash-attention-row"
-                  key={t.id}
-                  onClick={() => navigate(`/tickets?partner=${encodeURIComponent(t.partner)}`)}
-                >
-                  <div className={`dash-attention-avatar tk-avatar-${avatarTone(t.partner)}`}>{initials(t.partner)}</div>
-                  <div className="dash-attention-body">
-                    <span className="dash-attention-subject">{t.subject}</span>
-                    <span className="dash-attention-meta">
-                      {t.partner} · {t.id} · {t.time}
-                    </span>
+        <div className="dash-cell-ai">
+          <div className="card dash-card dash-card-accent-purple">
+            <SectionHeader
+              icon={Sparkles}
+              tone="purple"
+              title="AI Insights"
+              right={<span className="dash-ai-badge">Powered by AI</span>}
+            />
+            <div className="dash-insight-list">
+              {AI_INSIGHTS.map((insight, i) => (
+                <div className="dash-insight-row" key={i}>
+                  <div className={`dash-insight-icon dash-insight-icon-${insight.tone}`}>
+                    <insight.icon size={14} />
                   </div>
-                  <span className={`tk-badge tk-badge-${PRIORITY_TONE[t.priority]}`}>{t.priority}</span>
-                </button>
+                  <div className="dash-insight-body">
+                    <p>{insight.text}</p>
+                    <button type="button" className="dash-insight-link" onClick={() => navigate(insight.to)}>
+                      {insight.action}
+                      <ArrowRight size={11} />
+                    </button>
+                  </div>
+                </div>
               ))}
             </div>
-            <button type="button" className="dash-view-all" onClick={() => navigate('/tickets')}>
-              View all tickets
-              <ArrowRight size={13} />
-            </button>
+          </div>
+
+          <div className="card dash-card dash-card-accent-green">
+            <SectionHeader
+              icon={Activity}
+              tone="green"
+              title="Live Activity"
+              right={
+                <span className="dash-live-badge">
+                  <span className="dash-live-dot" />
+                  Live
+                </span>
+              }
+            />
+            <div className="dash-live-list">
+              {LIVE_ACTIVITY.map((a, i) => (
+                <div className="dash-live-row" key={i}>
+                  <div className={`dash-live-icon dash-live-icon-${a.tone}`}>
+                    <a.icon size={13} />
+                  </div>
+                  <div className="dash-live-body">
+                    <span className="dash-live-title">{a.title}</span>
+                    <span className="dash-live-detail">{a.detail}</span>
+                  </div>
+                  <span className="dash-live-time">{a.time}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="dash-row">
-        <div className="card dash-card dash-card-accent-amber">
-          <SectionHeader icon={Award} tone="amber" title="Top partners" sub="By rating" />
+        <div className="card dash-card dash-card-accent-amber dash-cell-partners">
+          <SectionHeader
+            icon={Users}
+            tone="amber"
+            title="Top Partners"
+            right={<HeaderLink onClick={() => navigate('/partners')}>View all</HeaderLink>}
+          />
+          <div className="dash-partner-table-head">
+            <span>Partner</span>
+            <span>Tickets</span>
+          </div>
           <div className="dash-partner-list">
             {TOP_PARTNERS.map((p) => (
               <button
@@ -439,49 +535,54 @@ export default function Dashboard() {
               >
                 <div className={`dash-partner-avatar tk-avatar-${avatarTone(p.name)}`}>{initials(p.name)}</div>
                 <div className="dash-partner-body">
-                  <div className="dash-partner-heading">
-                    <span className="dash-partner-name">{p.name}</span>
-                    <span className={`pt-badge pt-badge-${TIER_TONE[p.tier]}`}>{p.tier}</span>
-                  </div>
+                  <span className="dash-partner-name">{p.name}</span>
                   <div className="dash-partner-track">
-                    <div className="dash-partner-fill" style={{ width: `${(p.bookings / maxBookings) * 100}%` }} />
+                    <div className="dash-partner-fill" style={{ width: `${(p.tickets / maxPartnerTickets) * 100}%` }} />
                   </div>
                 </div>
                 <div className="dash-partner-stats">
-                  <div className="dash-partner-rating">
-                    <Star size={12} className="pt-star-filled" />
-                    {p.rating.toFixed(1)}
-                  </div>
-                  <span className="dash-partner-bookings">{p.bookings} bookings</span>
+                  <span className="dash-partner-count">{p.tickets}</span>
+                  <span className={`dash-partner-trend ${p.trend.up ? 'dash-delta-good' : 'dash-delta-bad'}`}>
+                    {p.trend.up ? <ArrowUp size={10} /> : <ArrowDown size={10} />}
+                    {p.trend.label}
+                  </span>
                 </div>
               </button>
             ))}
           </div>
-          <button type="button" className="dash-view-all" onClick={() => navigate('/partners')}>
-            View all partners
-            <ArrowRight size={13} />
-          </button>
         </div>
 
-        <div className="card dash-card dash-card-accent-purple">
-          <SectionHeader icon={Activity} tone="purple" title="Recent activity" />
-          <div className="dash-activity-list">
-            {RECENT_ACTIVITY.map((a, i) => (
-              <div className="dash-activity-row" key={i}>
-                <div className={`dash-activity-avatar dash-activity-avatar-${avatarTone(a.partner)}`}>
-                  {initials(a.partner)}
+        <div className="card dash-card dash-card-accent-blue dash-cell-team dash-card-center">
+          <SectionHeader
+            icon={ShieldCheck}
+            tone="blue"
+            title="Team Performance"
+            right={<HeaderLink onClick={() => navigate('/reports')}>View all</HeaderLink>}
+          />
+          <div className="dash-team-table-head">
+            <span>Agent</span>
+            <span>Resolved · CSAT</span>
+          </div>
+          <div className="dash-card-fill">
+            <div className="dash-team-list">
+              {TEAM_PERFORMANCE.map((p, i) => (
+                <div className="dash-team-row" key={p.name}>
+                  <div className="dash-team-rank">{i + 1}</div>
+                  <div className={`dash-team-avatar tk-avatar-${avatarTone(p.name)}`}>{initials(p.name)}</div>
+                  <div className="dash-team-body">
+                    <span className="dash-team-name">{p.name}</span>
+                    <span className="dash-team-role">{p.role}</span>
+                    <div className="dash-team-track">
+                      <div className="dash-team-fill" style={{ width: `${(p.resolved / maxResolved) * 100}%` }} />
+                    </div>
+                  </div>
+                  <div className="dash-team-stats">
+                    <span className="dash-team-resolved">{p.resolved}</span>
+                    <span className="dash-team-satisfaction">{p.satisfaction}%</span>
+                  </div>
                 </div>
-                <div className="dash-activity-body">
-                  <p>
-                    <strong>{a.partner}</strong> {a.action} <span className="dash-activity-ticket">{a.ticket}</span>
-                  </p>
-                  <span className="dash-activity-time">{a.time}</span>
-                </div>
-                <div className={`dash-activity-icon dash-activity-icon-${a.tone}`}>
-                  <a.icon size={13} />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
