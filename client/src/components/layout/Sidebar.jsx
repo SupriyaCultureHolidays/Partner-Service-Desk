@@ -1,4 +1,4 @@
-import { X } from 'lucide-react'
+import { UserRound, X } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import logo from '../../assets/ch_logo1.png'
 import { navItems } from '../../config/navigation'
@@ -59,7 +59,11 @@ export default function Sidebar({ user, mobileOpen, onCloseMobile, collapsed, on
         <div style={{ flex: 1 }} />
 
         <div className="sb-user">
-          <div className="sb-avatar">{userId.charAt(0).toUpperCase()}</div>
+          <div className="sb-avatar">
+            {user?.imageUrl
+              ? <img src={user.imageUrl} alt={userId} className="sb-avatar-img" />
+              : <UserRound size={18} />}
+          </div>
           <div className="sb-user-info">
             <span className="sb-user-name">{userId}</span>
             <span className="sb-user-email">{email}</span>
