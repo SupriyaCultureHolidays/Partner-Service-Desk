@@ -4,7 +4,9 @@ import logo from '../../assets/ch_logo1.png'
 import { navItems } from '../../config/navigation'
 import './Sidebar.css'
 
-export default function Sidebar({ mobileOpen, onCloseMobile, collapsed, onToggleCollapsed }) {
+export default function Sidebar({ user, mobileOpen, onCloseMobile, collapsed, onToggleCollapsed }) {
+  const userId = user?.userID || user?.username || 'Admin'
+  const email = user?.email || 'admin@cultureholidays.com'
   return (
     <>
       {mobileOpen && <div className="sb-overlay" onClick={onCloseMobile} />}
@@ -57,10 +59,10 @@ export default function Sidebar({ mobileOpen, onCloseMobile, collapsed, onToggle
         <div style={{ flex: 1 }} />
 
         <div className="sb-user">
-          <div className="sb-avatar">A</div>
+          <div className="sb-avatar">{userId.charAt(0).toUpperCase()}</div>
           <div className="sb-user-info">
-            <span className="sb-user-name">Admin</span>
-            <span className="sb-user-email">admin@cultureholidays.com</span>
+            <span className="sb-user-name">{userId}</span>
+            <span className="sb-user-email">{email}</span>
           </div>
         </div>
       </aside>

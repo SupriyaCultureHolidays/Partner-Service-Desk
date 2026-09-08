@@ -40,7 +40,7 @@ export default function Header({ theme, user, onLogout, onToggleTheme, onOpenMob
           <span className="live-dot" />
           LIVE
         </div>
-        {user?.staffName && <span className="topbar-user">{user.staffName}</span>}
+        {user?.email && <span className="topbar-user-email">{user.email}</span>}
         <button
           type="button"
           className="topbar-theme-btn"

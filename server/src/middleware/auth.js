@@ -16,6 +16,7 @@ const mapLiveUser = (decoded = {}, token) => ({
   staffName: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || decoded.staffName,
   staffRole: decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || decoded.staffRole,
   roleName: decoded.RoleName || decoded.roleName,
+  email: decoded.email || decoded.emailID,
   type: decoded.type,
   empId: decoded.empid || decoded.empId,
 });

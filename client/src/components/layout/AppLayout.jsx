@@ -25,6 +25,7 @@ export default function AppLayout({ user, onLogout }) {
   return (
     <div className="shell">
       <Sidebar
+        user={user}
         mobileOpen={mobileOpen}
         onCloseMobile={() => setMobileOpen(false)}
         collapsed={collapsed}
