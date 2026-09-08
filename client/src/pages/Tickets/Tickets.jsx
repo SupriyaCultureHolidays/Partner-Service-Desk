@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import {
   AlertTriangle,
   CheckCircle2,
@@ -267,7 +268,8 @@ function PriorityBadge({ priority }) {
 }
 
 export default function Tickets() {
-  const [query, setQuery] = useState('')
+  const [searchParams] = useSearchParams()
+  const [query, setQuery] = useState(() => searchParams.get('partner') || '')
   const [statusFilter, setStatusFilter] = useState('All')
   const [openTicketId, setOpenTicketId] = useState(null)
   const [extraMessages, setExtraMessages] = useState({})

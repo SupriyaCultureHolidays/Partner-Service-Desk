@@ -6,7 +6,7 @@ import {
   Clock,
   Crown,
   Headset,
-  LineChart,
+  Medal,
   MessageSquare,
   PieChart,
   Smile,
@@ -17,15 +17,6 @@ import {
 import StatCard from '../../components/ui/StatCard'
 import { avatarTone, initials } from '../../utils/avatar'
 import './Reports.css'
-
-const MONTHLY_TICKETS = [
-  { month: 'Apr', value: 18 },
-  { month: 'May', value: 24 },
-  { month: 'Jun', value: 21 },
-  { month: 'Jul', value: 29 },
-  { month: 'Aug', value: 35 },
-  { month: 'Sep', value: 22 },
-]
 
 const STATUS_BREAKDOWN = [
   { label: 'Resolved', value: 40, tone: 'green', icon: CheckCircle2 },
@@ -44,7 +35,7 @@ const TOP_PARTNERS = [
 
 const TEAM_PERFORMANCE = [
   {
-    name: 'Priya Sharma',
+    name: 'Harsit Sharma',
     role: 'Support Agent',
     resolved: 47,
     avgResponse: '1.8h',
@@ -52,7 +43,7 @@ const TEAM_PERFORMANCE = [
     resolutionRate: 94,
   },
   {
-    name: 'Ayesha Khan',
+    name: 'Dipak Kalal',
     role: 'Operations Manager',
     resolved: 41,
     avgResponse: '1.5h',
@@ -60,7 +51,7 @@ const TEAM_PERFORMANCE = [
     resolutionRate: 97,
   },
   {
-    name: 'Rahul Verma',
+    name: 'Ayesha Khan',
     role: 'Sales Executive',
     resolved: 34,
     avgResponse: '2.4h',
@@ -112,9 +103,28 @@ const RECENT_ACTIVITY = [
   },
 ]
 
-const maxMonthly = Math.max(...MONTHLY_TICKETS.map((m) => m.value))
+const TOTAL_TICKETS = 128
+
 const maxPartnerTickets = Math.max(...TOP_PARTNERS.map((p) => p.tickets))
-const maxResolved = Math.max(...TEAM_PERFORMANCE.map((p) => p.resolved))
+
+const RANK_MEDAL = ['#fbbf24', '#cbd5e1', '#d97706']
+
+const STATUS_DONUT_COLOR = {
+  green: 'var(--green)',
+  blue: 'var(--accent)',
+  amber: 'var(--amber)',
+  purple: 'var(--purple)',
+}
+
+const statusDonutGradient = (() => {
+  let cursor = 0
+  const stops = STATUS_BREAKDOWN.map((s) => {
+    const start = cursor
+    cursor += s.value
+    return `${STATUS_DONUT_COLOR[s.tone]} ${start}% ${cursor}%`
+  })
+  return `conic-gradient(${stops.join(', ')})`
+})()
 
 function SectionHeader({ icon: Icon, tone = 'blue', title, sub }) {
   return (
@@ -136,7 +146,7 @@ export default function Reports() {
       <div className="stats-grid">
         <StatCard
           icon={Ticket}
-          value="128"
+          value={TOTAL_TICKETS}
           label="Total Tickets"
           hint="Last 6 months"
           tone="blue"
@@ -154,94 +164,31 @@ export default function Reports() {
         <StatCard icon={Users} value="42" label="Active Partners" hint="This month" tone="purple" />
       </div>
 
-      <div className="card rp-card">
-        <SectionHeader icon={Headset} tone="purple" title="Team performance" sub="Sales · Operations · Support" />
-        <div className="rp-team-grid">
-          {TEAM_PERFORMANCE.map((p, i) => (
-            <div className={`rp-team-card ${i === 0 ? 'rp-team-top' : ''}`} key={p.name}>
-              {i === 0 && (
-                <div className="rp-team-crown">
-                  <Crown size={12} />
-                  Top performer
-                </div>
-              )}
-              <div className="rp-team-top-row">
-                <div className={`rp-team-avatar tk-avatar-${avatarTone(p.name)}`}>{initials(p.name)}</div>
-                <div className="rp-team-heading">
-                  <span className="rp-team-name">{p.name}</span>
-                  <span className="rp-team-role">{p.role}</span>
-                </div>
-              </div>
-              <div className="rp-team-stats">
-                <div className="rp-team-stat">
-                  <span className="rp-team-stat-value">{p.resolved}</span>
-                  <span className="rp-team-stat-label">Resolved</span>
-                </div>
-                <div className="rp-team-stat">
-                  <span className="rp-team-stat-value">{p.avgResponse}</span>
-                  <span className="rp-team-stat-label">Avg. response</span>
-                </div>
-                <div className="rp-team-stat">
-                  <span className="rp-team-stat-value">{p.satisfaction}%</span>
-                  <span className="rp-team-stat-label">Satisfaction</span>
-                </div>
-              </div>
-              <div className="rp-team-progress">
-                <div className="rp-team-progress-top">
-                  <span>Resolution rate</span>
-                  <span>{p.resolutionRate}%</span>
-                </div>
-                <div className="rp-team-progress-track">
-                  <div className="rp-team-progress-fill" style={{ width: `${p.resolutionRate}%` }} />
-                </div>
-              </div>
-              <div className="rp-team-bar-track" title={`${p.resolved} tickets resolved`}>
-                <div className="rp-team-bar-fill" style={{ width: `${(p.resolved / maxResolved) * 100}%` }} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="card rp-card">
-        <SectionHeader icon={LineChart} tone="blue" title="Tickets per month" sub="Last 6 months" />
-        <div className="rp-bars">
-          {MONTHLY_TICKETS.map((m) => (
-            <div className="rp-bar-col" key={m.month}>
-              <span className="rp-bar-value">{m.value}</span>
-              <div className="rp-bar-track">
-                <div
-                  className="rp-bar-fill"
-                  style={{ height: `${(m.value / maxMonthly) * 100}%` }}
-                  title={`${m.month}: ${m.value} tickets`}
-                />
-              </div>
-              <span className="rp-bar-label">{m.month}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       <div className="rp-row">
-        <div className="card rp-card">
+        <div className="card rp-card rp-card-accent-green">
           <SectionHeader icon={PieChart} tone="green" title="Tickets by status" />
-          <div className="rp-status-list">
-            {STATUS_BREAKDOWN.map((s) => (
-              <div className="rp-status-row" key={s.label}>
-                <div className="rp-status-label">
-                  <s.icon size={14} className={`rp-status-icon-${s.tone}`} />
-                  <span>{s.label}</span>
-                </div>
-                <div className="rp-status-track">
-                  <div className={`rp-status-fill rp-status-fill-${s.tone}`} style={{ width: `${s.value}%` }} />
-                </div>
-                <span className="rp-status-pct">{s.value}%</span>
+          <div className="rp-donut-wrap">
+            <div className="rp-donut" style={{ background: statusDonutGradient }}>
+              <div className="rp-donut-hole">
+                <span className="rp-donut-total">{TOTAL_TICKETS}</span>
+                <span className="rp-donut-total-label">Total</span>
               </div>
-            ))}
+            </div>
+            <div className="rp-donut-legend">
+              {STATUS_BREAKDOWN.map((s) => (
+                <div className="rp-legend-row" key={s.label}>
+                  <div className={`rp-legend-icon rp-legend-icon-${s.tone}`}>
+                    <s.icon size={12} />
+                  </div>
+                  <span className="rp-legend-label">{s.label}</span>
+                  <span className="rp-legend-pct">{s.value}%</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="card rp-card">
+        <div className="card rp-card rp-card-accent-amber">
           <SectionHeader icon={Award} tone="amber" title="Top partners by volume" />
           <div className="rp-partner-list">
             {TOP_PARTNERS.map((p) => (
@@ -260,7 +207,7 @@ export default function Reports() {
         </div>
       </div>
 
-      <div className="card rp-card">
+      <div className="card rp-card rp-card-accent-red">
         <SectionHeader icon={Activity} tone="red" title="Recent activity" />
         <div className="rp-activity-list">
           {RECENT_ACTIVITY.map((a, i) => (
@@ -276,6 +223,54 @@ export default function Reports() {
               </div>
               <div className={`rp-activity-icon rp-activity-icon-${a.tone}`}>
                 <a.icon size={13} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="card rp-card rp-card-accent-purple">
+        <SectionHeader icon={Headset} tone="purple" title="Team performance" sub="Sales · Operations · Support" />
+        <div className="rp-leaderboard">
+          {TEAM_PERFORMANCE.map((p, i) => (
+            <div className={`rp-lb-row ${i === 0 ? 'rp-lb-row-top' : ''}`} key={p.name}>
+              <div className="rp-lb-rank" style={{ color: RANK_MEDAL[i] }}>
+                {i === 0 ? <Crown size={18} /> : <Medal size={18} />}
+                <span>#{i + 1}</span>
+              </div>
+
+              <div className={`rp-lb-avatar tk-avatar-${avatarTone(p.name)}`}>{initials(p.name)}</div>
+
+              <div className="rp-lb-info">
+                <span className="rp-lb-name">{p.name}</span>
+                <span className="rp-lb-role">{p.role}</span>
+              </div>
+
+              <div className="rp-lb-stats">
+                <div className="rp-lb-stat">
+                  <strong>{p.resolved}</strong>
+                  <span>Resolved</span>
+                </div>
+                <div className="rp-lb-stat">
+                  <strong>{p.avgResponse}</strong>
+                  <span>Avg. response</span>
+                </div>
+                <div className="rp-lb-stat">
+                  <strong>{p.satisfaction}%</strong>
+                  <span>Satisfaction</span>
+                </div>
+              </div>
+
+              <div className="rp-lb-ring-wrap">
+                <div
+                  className="rp-lb-ring"
+                  style={{
+                    background: `conic-gradient(var(--green) ${p.resolutionRate}%, rgba(255,255,255,0.08) ${p.resolutionRate}% 100%)`,
+                  }}
+                >
+                  <div className="rp-lb-ring-hole">{p.resolutionRate}%</div>
+                </div>
+                <span className="rp-lb-ring-label">Resolution</span>
               </div>
             </div>
           ))}

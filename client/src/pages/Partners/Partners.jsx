@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Award, Mail, MapPin, Phone, Search, Star, Ticket, Users } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Award, Calendar, Mail, MapPin, Phone, Search, Star, Ticket, Users } from 'lucide-react'
 import StatCard from '../../components/ui/StatCard'
 import { avatarTone, initials } from '../../utils/avatar'
 import './Partners.css'
@@ -103,6 +104,7 @@ function RatingStars({ value }) {
 }
 
 export default function Partners() {
+  const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [tierFilter, setTierFilter] = useState('All')
 
@@ -151,7 +153,12 @@ export default function Partners() {
 
       <div className="pt-grid">
         {filtered.map((p) => (
-          <div className="card pt-card" key={p.name}>
+          <button
+            type="button"
+            className="card pt-card"
+            key={p.name}
+            onClick={() => navigate(`/tickets?partner=${encodeURIComponent(p.name)}`)}
+          >
             <div className="pt-card-top">
               <div className={`pt-avatar pt-avatar-${avatarTone(p.name)}`}>{initials(p.name)}</div>
               <div className="pt-card-heading">
@@ -167,20 +174,25 @@ export default function Partners() {
                   {tag}
                 </span>
               ))}
-              <span className="pt-tag pt-tag-muted">Partner since {p.since}</span>
             </div>
 
-            <div className="pt-meta">
-              <MapPin size={13} />
-              <span>{p.region}</span>
-            </div>
-            <div className="pt-meta">
-              <Mail size={13} />
-              <span>{p.email}</span>
-            </div>
-            <div className="pt-meta">
-              <Phone size={13} />
-              <span>{p.phone}</span>
+            <div className="pt-meta-grid">
+              <div className="pt-meta">
+                <MapPin size={13} />
+                <span>{p.region}</span>
+              </div>
+              <div className="pt-meta">
+                <Phone size={13} />
+                <span>{p.phone}</span>
+              </div>
+              <div className="pt-meta">
+                <Mail size={13} />
+                <span>{p.email}</span>
+              </div>
+              <div className="pt-meta">
+                <Calendar size={13} />
+                <span>Partner since {p.since}</span>
+              </div>
             </div>
 
             <div className="pt-stats-row">
@@ -193,7 +205,7 @@ export default function Partners() {
                 <span className="pt-stat-label">Open tickets</span>
               </div>
             </div>
-          </div>
+          </button>
         ))}
         {filtered.length === 0 && <div className="card pt-empty">No partners match your search.</div>}
       </div>
