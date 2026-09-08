@@ -567,8 +567,10 @@ export default function Dashboard({ user }) {
             <div className="dash-team-list">
               {TEAM_PERFORMANCE.map((p, i) => (
                 <div className="dash-team-row" key={p.name}>
-                  <div className="dash-team-rank">{i + 1}</div>
-                  <div className={`dash-team-avatar tk-avatar-${avatarTone(p.name)}`}>{initials(p.name)}</div>
+                  <div className="dash-team-avatar-wrap">
+                    <div className={`dash-team-avatar tk-avatar-${avatarTone(p.name)}`}>{initials(p.name)}</div>
+                    <span className="dash-team-rank">{i + 1}</span>
+                  </div>
                   <div className="dash-team-body">
                     <span className="dash-team-name">{p.name}</span>
                     <span className="dash-team-role">{p.role}</span>

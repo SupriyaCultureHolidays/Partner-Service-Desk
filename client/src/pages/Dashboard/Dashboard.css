@@ -407,13 +407,14 @@
 /* Ticket distribution */
 .dash-mini-donut-wrap {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 18px;
 }
 .dash-mini-donut {
   position: relative;
-  width: 92px;
-  height: 92px;
+  width: 108px;
+  height: 108px;
   border-radius: 50%;
   flex-shrink: 0;
   display: flex;
@@ -445,7 +446,7 @@
   display: flex;
   flex-direction: column;
   gap: 9px;
-  flex: 1;
+  width: 100%;
   min-width: 0;
 }
 .dash-mini-legend-row {
@@ -770,17 +771,8 @@
 .dash-team-row:hover {
   background: rgba(255, 255, 255, 0.03);
 }
-.dash-team-rank {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: rgba(37, 99, 235, 0.14);
-  color: var(--accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.62rem;
-  font-weight: 700;
+.dash-team-avatar-wrap {
+  position: relative;
   flex-shrink: 0;
 }
 .dash-team-avatar {
@@ -793,7 +785,22 @@
   font-size: 0.64rem;
   font-weight: 700;
   color: #fff;
-  flex-shrink: 0;
+}
+.dash-team-rank {
+  position: absolute;
+  bottom: -3px;
+  right: -3px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.58rem;
+  font-weight: 700;
+  border: 2px solid var(--surface);
 }
 .dash-team-body {
   display: flex;
