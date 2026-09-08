@@ -1,0 +1,347 @@
+.tk-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  flex-wrap: wrap;
+}
+
+.tk-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 220px;
+  max-width: 340px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-3);
+}
+
+.tk-search input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+.tk-search input::placeholder {
+  color: var(--text-3);
+}
+
+.tk-filters {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tk-filter-pill {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-3);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+.tk-filter-pill:hover {
+  color: var(--text-2);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.tk-filter-active,
+.tk-filter-active:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* Ticket card grid */
+.tk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.tk-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-left: 3px solid transparent;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.tk-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.tk-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.tk-card-red {
+  border-left-color: var(--red);
+}
+.tk-card-amber {
+  border-left-color: var(--amber);
+}
+.tk-card-blue {
+  border-left-color: var(--accent);
+}
+.tk-card-gray {
+  border-left-color: rgba(255, 255, 255, 0.15);
+}
+
+.tk-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.tk-avatar {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+.tk-avatar-blue {
+  background: var(--accent);
+}
+.tk-avatar-green {
+  background: var(--green);
+}
+.tk-avatar-amber {
+  background: var(--amber);
+  color: #2a1c02;
+}
+.tk-avatar-purple {
+  background: var(--purple);
+}
+.tk-avatar-red {
+  background: var(--red);
+}
+
+.tk-avatar-dot {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--red);
+  border: 2px solid var(--surface);
+}
+
+.tk-card-heading {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+.tk-partner-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tk-id {
+  font-size: 0.68rem;
+  color: var(--text-3);
+}
+
+.tk-card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.tk-card-time {
+  font-size: 0.7rem;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.tk-assignee-mini {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: #fff;
+}
+.tk-assignee-mini-empty {
+  background: transparent;
+  border: 1.5px dashed var(--border);
+  color: var(--text-3);
+}
+
+.tk-card-subject {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.tk-card-preview {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tk-preview-you {
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+.tk-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-soft);
+  flex-wrap: wrap;
+}
+
+.tk-card-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.tk-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: var(--text-3);
+}
+
+.tk-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 18px;
+  color: var(--text-3);
+  font-size: 0.85rem;
+}
+
+.tk-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.tk-badge-blue {
+  background: rgba(37, 99, 235, 0.15);
+  color: #60a5fa;
+}
+.tk-badge-amber {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--amber);
+}
+.tk-badge-green {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--green);
+}
+.tk-badge-red {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--red);
+}
+.tk-badge-purple {
+  background: rgba(124, 58, 237, 0.15);
+  color: #a78bfa;
+}
+.tk-badge-gray {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-3);
+}
+
+.tk-assign {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+.tk-assign-label {
+  font-size: 0.7rem;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+.tk-assign-select {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-2);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 10px;
+  outline: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color var(--transition);
+}
+.tk-assign-select:hover,
+.tk-assign-select:focus {
+  border-color: var(--accent);
+}
+.tk-assign-select option {
+  background: var(--bg);
+  color: var(--text);
+}
+
+body.light-theme .tk-search {
+  background: rgba(0, 0, 0, 0.02);
+}
+body.light-theme .tk-badge-blue {
+  color: var(--accent);
+}
+body.light-theme .tk-badge-purple {
+  color: var(--purple);
+}
+body.light-theme .tk-avatar-dot {
+  border-color: #fff;
+}
+
+@media (max-width: 768px) {
+  .tk-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .tk-search {
+    max-width: none;
+  }
+}

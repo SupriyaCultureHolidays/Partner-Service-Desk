@@ -80,11 +80,39 @@
   background: radial-gradient(circle, rgba(124, 58, 237, 0.2) 0%, transparent 70%);
 }
 
+.stat-body {
+  min-width: 0;
+}
+
+.stat-top-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .stat-value {
   font-size: 1.5rem;
   font-weight: 800;
   color: var(--text);
   letter-spacing: -0.03em;
+}
+
+.stat-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 999px;
+}
+.stat-trend-up {
+  color: var(--green);
+  background: rgba(16, 185, 129, 0.14);
+}
+.stat-trend-down {
+  color: var(--red);
+  background: rgba(239, 68, 68, 0.14);
 }
 .stat-label {
   font-size: 0.78rem;
