@@ -26,6 +26,13 @@ import { avatarTone, initials } from '../../utils/avatar'
 import PageLoader from '../../components/ui/PageLoader'
 import './Dashboard.css'
 
+// --- Sample data for local UI development ---
+// Everything below (down to the component definitions) is hardcoded so the
+// dashboard renders without a backend. Swap each block for a real API call
+// when the corresponding endpoint is ready; tone/color/label maps (e.g.
+// ATTENTION_TAG, DISTRIBUTION_COLOR) are UI-only and can stay as-is.
+
+// TODO: replace with GET /api/tickets/trend?range=7d|1m|12m
 const TREND_7D = [
   { day: 'Mon', value: 14 },
   { day: 'Tue', value: 19 },
@@ -70,6 +77,7 @@ const TREND_RANGE_OPTIONS = [
   { key: '12m', label: 'Last 12 months' },
 ]
 
+// TODO: replace with GET /api/dashboard/metrics
 const METRICS = [
   {
     icon: Ticket,
@@ -127,6 +135,7 @@ const ATTENTION_TAG = {
   Info: { label: 'INFO', tone: 'purple' },
 }
 
+// TODO: replace with GET /api/tickets?attention=true
 const ATTENTION_REQUIRED = [
   {
     id: 'TCK-1042',
@@ -178,6 +187,7 @@ const ATTENTION_REQUIRED = [
   },
 ]
 
+// TODO: replace with GET /api/tickets/distribution
 const DISTRIBUTION = [
   { label: 'Open', value: 32, tone: 'blue' },
   { label: 'In Progress', value: 21, tone: 'amber' },
@@ -192,6 +202,7 @@ const DISTRIBUTION_COLOR = {
   purple: 'var(--purple)',
 }
 
+// TODO: replace with GET /api/partners/top
 const TOP_PARTNERS = [
   { name: 'Sunrise Tours & Travel', tickets: 18, trend: { up: true, label: '+12%' } },
   { name: 'Golden Gate Holidays', tickets: 14, trend: { up: true, label: '+6%' } },
@@ -201,6 +212,7 @@ const TOP_PARTNERS = [
 ]
 const maxPartnerTickets = Math.max(...TOP_PARTNERS.map((p) => p.tickets))
 
+// TODO: replace with GET /api/team/performance
 const TEAM_PERFORMANCE = [
   { name: 'Harsit Sharma', role: 'Support Agent', resolved: 47, satisfaction: 96 },
   { name: 'Dipak Kalal', role: 'Operations Manager', resolved: 41, satisfaction: 98 },
@@ -209,6 +221,7 @@ const TEAM_PERFORMANCE = [
 ]
 const maxResolved = Math.max(...TEAM_PERFORMANCE.map((p) => p.resolved))
 
+// TODO: replace with GET /api/insights (AI-generated)
 const AI_INSIGHTS = [
   {
     icon: TrendingUp,
@@ -237,6 +250,7 @@ const AI_INSIGHTS = [
   },
 ]
 
+// TODO: replace with GET /api/activity/live (or a websocket feed)
 const LIVE_ACTIVITY = [
   {
     icon: CheckCircle2,

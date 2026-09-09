@@ -20,6 +20,14 @@ import PageLoader from '../../components/ui/PageLoader'
 import { avatarTone, initials } from '../../utils/avatar'
 import './Reports.css'
 
+// --- Sample data for local UI development ---
+// Everything below (down to SectionHeader) is hardcoded so the reports page
+// renders without a backend. Swap each block for a real API call when the
+// corresponding endpoint is ready; RANK_MEDAL/*_COLOR maps are UI-only, and
+// maxPartnerTickets/statusDonutGradient are derived from the data above so
+// they don't need their own endpoint.
+
+// TODO: replace with GET /api/reports/status-breakdown
 const STATUS_BREAKDOWN = [
   { label: 'Resolved', value: 40, tone: 'green', icon: CheckCircle2 },
   { label: 'Open', value: 32, tone: 'blue', icon: Circle },
@@ -27,6 +35,7 @@ const STATUS_BREAKDOWN = [
   { label: 'Closed', value: 7, tone: 'purple', icon: XCircle },
 ]
 
+// TODO: replace with GET /api/reports/top-partners
 const TOP_PARTNERS = [
   { name: 'Sunrise Tours & Travel', tickets: 18 },
   { name: 'Golden Gate Holidays', tickets: 14 },
@@ -35,6 +44,7 @@ const TOP_PARTNERS = [
   { name: 'Emerald Isle Journeys', tickets: 6 },
 ]
 
+// TODO: replace with GET /api/team/performance
 const TEAM_PERFORMANCE = [
   {
     name: 'Harsit Sharma',
@@ -62,6 +72,7 @@ const TEAM_PERFORMANCE = [
   },
 ].sort((a, b) => b.resolved - a.resolved)
 
+// TODO: replace with GET /api/activity/recent
 const RECENT_ACTIVITY = [
   {
     partner: 'Sunrise Tours & Travel',
@@ -105,6 +116,7 @@ const RECENT_ACTIVITY = [
   },
 ]
 
+// TODO: replace with GET /api/reports/summary
 const TOTAL_TICKETS = 128
 
 const maxPartnerTickets = Math.max(...TOP_PARTNERS.map((p) => p.tickets))

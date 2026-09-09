@@ -6,6 +6,8 @@ import PageLoader from '../../components/ui/PageLoader'
 import { avatarTone, initials } from '../../utils/avatar'
 import './Partners.css'
 
+// --- Sample data for local UI development ---
+// TODO: replace with GET /api/partners
 const PARTNERS = [
   {
     name: 'Sunrise Tours & Travel',

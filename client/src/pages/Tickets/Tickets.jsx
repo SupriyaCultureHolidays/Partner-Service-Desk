@@ -18,8 +18,11 @@ import PageLoader from '../../components/ui/PageLoader'
 import { avatarTone, initials } from '../../utils/avatar'
 import './Tickets.css'
 
+// --- Sample data for local UI development ---
+// TODO: replace with GET /api/agents
 const AGENTS = ['Priya Sharma', 'Rahul Verma', 'Ayesha Khan']
 
+// TODO: replace with GET /api/tickets (list) + GET /api/tickets/:id/messages (thread)
 const TICKETS = [
   {
     id: 'TCK-1042',
