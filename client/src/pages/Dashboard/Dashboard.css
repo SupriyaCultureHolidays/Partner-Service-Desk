@@ -260,6 +260,52 @@
   color: var(--text-3);
 }
 
+.dash-trend-menu {
+  position: relative;
+}
+.dash-trend-menu-trigger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+.dash-trend-menu-trigger:hover {
+  color: var(--text-2);
+}
+.dash-trend-menu-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 10;
+  min-width: 150px;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.dash-trend-menu-item {
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.dash-trend-menu-item:hover {
+  background: var(--border-soft);
+}
+.dash-trend-menu-item-active {
+  color: var(--accent);
+  font-weight: 700;
+}
+
 /* Bento grid */
 .dash-bento {
   display: grid;

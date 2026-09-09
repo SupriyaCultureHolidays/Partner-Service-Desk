@@ -146,7 +146,7 @@ export default function Reports() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 700)
+    const timer = setTimeout(() => setIsLoading(false), 120)
     return () => clearTimeout(timer)
   }, [])
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell, ResponsiveContainer } from 'recharts'
 import { PieChart as MuiPieChart } from '@mui/x-charts/PieChart'
@@ -27,7 +27,7 @@ import { avatarTone, initials } from '../../utils/avatar'
 import PageLoader from '../../components/ui/PageLoader'
 import './Dashboard.css'
 
-const TREND = [
+const TREND_7D = [
   { day: 'Mon', value: 14 },
   { day: 'Tue', value: 19 },
   { day: 'Wed', value: 12 },
@@ -35,6 +35,40 @@ const TREND = [
   { day: 'Fri', value: 25 },
   { day: 'Sat', value: 17 },
   { day: 'Sun', value: 23 },
+]
+
+const TREND_1M = [
+  { day: 'Week 1', value: 78 },
+  { day: 'Week 2', value: 92 },
+  { day: 'Week 3', value: 65 },
+  { day: 'Week 4', value: 101 },
+]
+
+const TREND_12M = [
+  { day: 'Jan', value: 145 },
+  { day: 'Feb', value: 132 },
+  { day: 'Mar', value: 158 },
+  { day: 'Apr', value: 170 },
+  { day: 'May', value: 162 },
+  { day: 'Jun', value: 178 },
+  { day: 'Jul', value: 190 },
+  { day: 'Aug', value: 185 },
+  { day: 'Sep', value: 205 },
+  { day: 'Oct', value: 198 },
+  { day: 'Nov', value: 219 },
+  { day: 'Dec', value: 231 },
+]
+
+const TREND_RANGES = {
+  '7d': TREND_7D,
+  '1m': TREND_1M,
+  '12m': TREND_12M,
+}
+
+const TREND_RANGE_OPTIONS = [
+  { key: '7d', label: 'Last 7 days' },
+  { key: '1m', label: 'Last 1 month' },
+  { key: '12m', label: 'Last 12 months' },
 ]
 
 const METRICS = [
@@ -292,7 +326,12 @@ function TrendChart({ data }) {
 
   return (
     <ResponsiveContainer width="100%" height={190}>
-      <BarChart data={data} margin={{ top: 10, right: 8, left: -8, bottom: 0 }} barCategoryGap="32%">
+      <BarChart
+        data={data}
+        margin={{ top: 10, right: 8, left: -8, bottom: 0 }}
+        barCategoryGap="32%"
+        accessibilityLayer={false}
+      >
         <CartesianGrid vertical={false} stroke="var(--border-soft)" />
         <XAxis
           dataKey="day"
@@ -301,8 +340,7 @@ function TrendChart({ data }) {
           tickLine={false}
         />
         <YAxis
-          domain={[0, 30]}
-          ticks={[0, 10, 20, 30]}
+          domain={[0, 'dataMax']}
           tick={{ fill: 'var(--text-3)', fontSize: 9 }}
           axisLine={false}
           tickLine={false}
@@ -320,6 +358,51 @@ function TrendChart({ data }) {
         </Bar>
       </BarChart>
     </ResponsiveContainer>
+  )
+}
+
+function TrendRangeMenu({ value, onChange }) {
+  const [open, setOpen] = useState(false)
+  const menuRef = useRef(null)
+  const current = TREND_RANGE_OPTIONS.find((o) => o.key === value) ?? TREND_RANGE_OPTIONS[0]
+
+  useEffect(() => {
+    if (!open) return
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [open])
+
+  return (
+    <div className="dash-trend-menu" ref={menuRef}>
+      <button
+        type="button"
+        className="dash-header-static dash-trend-menu-trigger"
+        onClick={() => setOpen((o) => !o)}
+      >
+        {current.label}
+        <ChevronDown size={12} />
+      </button>
+      {open && (
+        <div className="dash-trend-menu-list">
+          {TREND_RANGE_OPTIONS.map((opt) => (
+            <button
+              key={opt.key}
+              type="button"
+              className={`dash-trend-menu-item${opt.key === value ? ' dash-trend-menu-item-active' : ''}`}
+              onClick={() => {
+                onChange(opt.key)
+                setOpen(false)
+              }}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -347,9 +430,10 @@ function MetricCard({ icon: Icon, tone, value, label, delta, context, badge }) {
 export default function Dashboard({ user }) {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(true)
+  const [trendRange, setTrendRange] = useState('7d')
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 700)
+    const timer = setTimeout(() => setIsLoading(false), 120)
     return () => clearTimeout(timer)
   }, [])
 
@@ -419,19 +503,16 @@ export default function Dashboard({ user }) {
           </div>
         </div>
 
-        <div className="card dash-card dash-card-accent-blue dash-cell-activity">
+        <div className="card dash-card dash-card-accent-blue dash-cell-activity dash-card-center">
           <SectionHeader
             icon={TrendingUp}
             tone="blue"
             title="Ticket Activity"
-            right={
-              <span className="dash-header-static">
-                Last 7 days
-                <ChevronDown size={12} />
-              </span>
-            }
+            right={<TrendRangeMenu value={trendRange} onChange={setTrendRange} />}
           />
-          <TrendChart data={TREND} />
+          <div className="dash-card-fill">
+            <TrendChart data={TREND_RANGES[trendRange]} />
+          </div>
         </div>
 
         <div className="card dash-card dash-card-accent-purple dash-cell-distribution dash-card-center">
