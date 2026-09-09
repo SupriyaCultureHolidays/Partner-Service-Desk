@@ -12,7 +12,6 @@ import {
   ChevronDown,
   Clock,
   Flame,
-  Lightbulb,
   MessageSquare,
   PieChart,
   ShieldCheck,
@@ -452,15 +451,6 @@ export default function Dashboard({ user }) {
           </h2>
           <p>Here's what's happening with partner support today.</p>
         </div>
-
-        <div className="dash-hero-tip">
-          <Lightbulb size={16} />
-          <div>
-            <strong>Keep up the great work!</strong>
-            <span>Resolution rate is 12% higher than last week.</span>
-          </div>
-        </div>
-
       </div>
 
       <div className="stats-grid dash-metrics-grid">
