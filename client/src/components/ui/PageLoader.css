@@ -1,0 +1,11 @@
+.page-loader {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-loader-anim {
+  width: min(420px, 60vw);
+  height: min(420px, 60vw);
+}

@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Award, Calendar, Mail, MapPin, Phone, Search, Star, Ticket, Users } from 'lucide-react'
 import StatCard from '../../components/ui/StatCard'
+import PageLoader from '../../components/ui/PageLoader'
 import { avatarTone, initials } from '../../utils/avatar'
 import './Partners.css'
 
@@ -107,6 +108,12 @@ export default function Partners() {
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [tierFilter, setTierFilter] = useState('All')
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 700)
+    return () => clearTimeout(timer)
+  }, [])
 
   const filtered = PARTNERS.filter((p) => {
     const matchesTier = tierFilter === 'All' || p.tier === tierFilter
@@ -117,6 +124,8 @@ export default function Partners() {
   const goldCount = PARTNERS.filter((p) => p.tier === 'Gold').length
   const totalOpenTickets = PARTNERS.reduce((sum, p) => sum + p.openTickets, 0)
   const avgRating = (PARTNERS.reduce((sum, p) => sum + p.rating, 0) / PARTNERS.length).toFixed(1)
+
+  if (isLoading) return <PageLoader />
 
   return (
     <div className="page">

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import {
   Activity,
   Award,
@@ -15,6 +16,7 @@ import {
   XCircle,
 } from 'lucide-react'
 import StatCard from '../../components/ui/StatCard'
+import PageLoader from '../../components/ui/PageLoader'
 import { avatarTone, initials } from '../../utils/avatar'
 import './Reports.css'
 
@@ -141,6 +143,15 @@ function SectionHeader({ icon: Icon, tone = 'blue', title, sub }) {
 }
 
 export default function Reports() {
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 700)
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (isLoading) return <PageLoader />
+
   return (
     <div className="page">
       <div className="stats-grid">

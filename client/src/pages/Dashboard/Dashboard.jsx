@@ -1,5 +1,6 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell, ResponsiveContainer } from 'recharts'
 import { PieChart as MuiPieChart } from '@mui/x-charts/PieChart'
 import {
   Activity,
@@ -23,6 +24,7 @@ import {
   Users,
 } from 'lucide-react'
 import { avatarTone, initials } from '../../utils/avatar'
+import PageLoader from '../../components/ui/PageLoader'
 import './Dashboard.css'
 
 const TREND = [
@@ -286,15 +288,11 @@ function HeaderLink({ children, onClick }) {
 }
 
 function TrendChart({ data }) {
+  const maxValue = Math.max(...data.map((d) => d.value))
+
   return (
     <ResponsiveContainer width="100%" height={190}>
-      <AreaChart data={data} margin={{ top: 10, right: 8, left: -8, bottom: 0 }}>
-        <defs>
-          <linearGradient id="dashTrendFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.4} />
-            <stop offset="100%" stopColor="var(--accent)" stopOpacity={0} />
-          </linearGradient>
-        </defs>
+      <BarChart data={data} margin={{ top: 10, right: 8, left: -8, bottom: 0 }} barCategoryGap="32%">
         <CartesianGrid vertical={false} stroke="var(--border-soft)" />
         <XAxis
           dataKey="day"
@@ -313,18 +311,14 @@ function TrendChart({ data }) {
         <Tooltip
           contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
           labelStyle={{ color: 'var(--text-2)' }}
-          cursor={{ stroke: 'var(--border)' }}
+          cursor={{ fill: 'var(--border-soft)' }}
         />
-        <Area
-          type="monotone"
-          dataKey="value"
-          stroke="var(--accent)"
-          strokeWidth={2.5}
-          fill="url(#dashTrendFill)"
-          dot={{ r: 3.4, fill: 'var(--bg)', stroke: 'var(--accent)', strokeWidth: 2 }}
-          activeDot={{ r: 5 }}
-        />
-      </AreaChart>
+        <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={26} isAnimationActive={false}>
+          {data.map((d) => (
+            <Cell key={d.day} fill={d.value === maxValue ? 'var(--purple)' : 'var(--accent)'} />
+          ))}
+        </Bar>
+      </BarChart>
     </ResponsiveContainer>
   )
 }
@@ -352,10 +346,18 @@ function MetricCard({ icon: Icon, tone, value, label, delta, context, badge }) {
 
 export default function Dashboard({ user }) {
   const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 700)
+    return () => clearTimeout(timer)
+  }, [])
 
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
   const firstName = (user?.userID || user?.username || '').split(/[\s._-]/)[0] || 'there'
+
+  if (isLoading) return <PageLoader />
 
   return (
     <div className="page">

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import {
   AlertTriangle,
@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import StatCard from '../../components/ui/StatCard'
 import ChatDrawer from '../../components/ui/ChatDrawer'
+import PageLoader from '../../components/ui/PageLoader'
 import { avatarTone, initials } from '../../utils/avatar'
 import './Tickets.css'
 
@@ -275,6 +276,12 @@ export default function Tickets() {
   const [extraMessages, setExtraMessages] = useState({})
   const [assignees, setAssignees] = useState({})
   const [draft, setDraft] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 700)
+    return () => clearTimeout(timer)
+  }, [])
 
   const getAssignee = (t) => assignees[t.id] ?? t.assignee
 
@@ -327,6 +334,8 @@ export default function Tickets() {
     }))
     setDraft('')
   }
+
+  if (isLoading) return <PageLoader />
 
   return (
     <div className="page">
