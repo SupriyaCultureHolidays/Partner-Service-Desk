@@ -397,13 +397,6 @@
   background: rgba(245, 158, 11, 0.22);
 }
 
-/* Ticket activity chart */
-.dash-trend-svg {
-  width: 100%;
-  height: 190px;
-  display: block;
-}
-
 /* Ticket distribution */
 .dash-mini-donut-wrap {
   display: flex;
@@ -413,17 +406,22 @@
 }
 .dash-mini-donut {
   position: relative;
-  width: 108px;
-  height: 108px;
+  width: 168px;
+  height: 168px;
   border-radius: 50%;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+.dash-mini-donut-chart {
+  position: absolute;
+  inset: 0;
+}
 .dash-mini-donut-hole {
-  width: 62%;
-  height: 62%;
+  position: relative;
+  width: 38%;
+  height: 38%;
   border-radius: 50%;
   background: var(--surface);
   display: flex;
@@ -482,26 +480,12 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.dash-mini-legend-stats {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1px;
-  flex-shrink: 0;
-}
 .dash-mini-legend-pct {
   font-size: 0.76rem;
   font-weight: 700;
   color: var(--text-3);
   white-space: nowrap;
-}
-.dash-mini-legend-trend {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  font-size: 0.64rem;
-  font-weight: 700;
-  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* AI Insights */

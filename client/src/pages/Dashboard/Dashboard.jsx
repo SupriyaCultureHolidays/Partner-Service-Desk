@@ -1,4 +1,6 @@
 import { useNavigate } from 'react-router-dom'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { PieChart as MuiPieChart } from '@mui/x-charts/PieChart'
 import {
   Activity,
   AlertTriangle,
@@ -131,13 +133,21 @@ const ATTENTION_REQUIRED = [
     meta: '7h ago · Open',
     action: 'View Ticket',
   },
+  {
+    id: 'TCK-1044',
+    tag: 'Info',
+    partner: 'Andes Trail Co.',
+    subject: 'Group discount request for 15-person trekking tour',
+    meta: '4h ago · Open',
+    action: 'View Ticket',
+  },
 ]
 
 const DISTRIBUTION = [
-  { label: 'Open', value: 32, tone: 'blue', trend: { up: false, label: '-2%' } },
-  { label: 'In Progress', value: 21, tone: 'amber', trend: { up: true, label: '+3%' } },
-  { label: 'Resolved', value: 40, tone: 'green', trend: { up: true, label: '+5%' } },
-  { label: 'Closed', value: 7, tone: 'purple', trend: { up: true, label: '+1%' } },
+  { label: 'Open', value: 32, tone: 'blue' },
+  { label: 'In Progress', value: 21, tone: 'amber' },
+  { label: 'Resolved', value: 40, tone: 'green' },
+  { label: 'Closed', value: 7, tone: 'purple' },
 ]
 const DISTRIBUTION_TOTAL = 128
 const DISTRIBUTION_COLOR = {
@@ -146,15 +156,6 @@ const DISTRIBUTION_COLOR = {
   green: 'var(--green)',
   purple: 'var(--purple)',
 }
-const distributionGradient = (() => {
-  let cursor = 0
-  const stops = DISTRIBUTION.map((s) => {
-    const start = cursor
-    cursor += s.value
-    return `${DISTRIBUTION_COLOR[s.tone]} ${start}% ${cursor}%`
-  })
-  return `conic-gradient(${stops.join(', ')})`
-})()
 
 const TOP_PARTNERS = [
   { name: 'Sunrise Tours & Travel', tickets: 18, trend: { up: true, label: '+12%' } },
@@ -169,6 +170,7 @@ const TEAM_PERFORMANCE = [
   { name: 'Harsit Sharma', role: 'Support Agent', resolved: 47, satisfaction: 96 },
   { name: 'Dipak Kalal', role: 'Operations Manager', resolved: 41, satisfaction: 98 },
   { name: 'Ayesha Khan', role: 'Sales Executive', resolved: 34, satisfaction: 91 },
+  { name: 'Priya Sharma', role: 'Support Agent', resolved: 29, satisfaction: 94 },
 ]
 const maxResolved = Math.max(...TEAM_PERFORMANCE.map((p) => p.resolved))
 
@@ -243,6 +245,20 @@ const LIVE_ACTIVITY = [
     detail: 'Andes Trail Co. (TCK-1028)',
     time: '3h ago',
   },
+  {
+    icon: CheckCircle2,
+    tone: 'green',
+    title: 'Invoice corrected',
+    detail: 'Golden Gate Holidays (TCK-1038)',
+    time: '5h ago',
+  },
+  {
+    icon: Clock,
+    tone: 'blue',
+    title: 'Refund approved',
+    detail: 'Nusantara Escapes (TCK-1041)',
+    time: '6h ago',
+  },
 ]
 
 function SectionHeader({ icon: Icon, tone = 'blue', title, sub, right }) {
@@ -269,61 +285,47 @@ function HeaderLink({ children, onClick }) {
   )
 }
 
-function linePath(values, width, height, max, padTop = 10, padBottom = 20) {
-  const step = width / (values.length - 1)
-  return values.map((v, i) => ({
-    x: i * step,
-    y: height - padBottom - (v / max) * (height - padTop - padBottom),
-  }))
-}
-
 function TrendChart({ data }) {
-  const width = 280
-  const height = 190
-  const padX = 26
-  const niceMax = 30
-  const ticks = [0, 10, 20, 30]
-
-  const points = linePath(
-    data.map((d) => d.value),
-    width - padX,
-    height,
-    niceMax,
-  ).map((p, i) => ({ ...p, x: p.x + padX, ...data[i] }))
-
-  const path = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
-  const area = `${path} L ${points[points.length - 1].x} ${height - 20} L ${points[0].x} ${height - 20} Z`
-
   return (
-    <svg className="dash-trend-svg" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
-      <defs>
-        <linearGradient id="dashTrendFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      {ticks.map((t) => {
-        const y = height - 20 - (t / niceMax) * (height - 30)
-        return (
-          <g key={t}>
-            <line x1={padX} x2={width} y1={y} y2={y} stroke="var(--border-soft)" strokeWidth="1" />
-            <text x={0} y={y + 3} fontSize="9" fill="var(--text-3)">
-              {t}
-            </text>
-          </g>
-        )
-      })}
-      <path d={area} fill="url(#dashTrendFill)" />
-      <path d={path} fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-      {points.map((p) => (
-        <circle key={p.day} cx={p.x} cy={p.y} r="3.4" fill="var(--bg)" stroke="var(--accent)" strokeWidth="2" />
-      ))}
-      {points.map((p) => (
-        <text key={`${p.day}-label`} x={p.x} y={height - 4} fontSize="9" textAnchor="middle" fill="var(--text-3)">
-          {p.day}
-        </text>
-      ))}
-    </svg>
+    <ResponsiveContainer width="100%" height={190}>
+      <AreaChart data={data} margin={{ top: 10, right: 8, left: -8, bottom: 0 }}>
+        <defs>
+          <linearGradient id="dashTrendFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.4} />
+            <stop offset="100%" stopColor="var(--accent)" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid vertical={false} stroke="var(--border-soft)" />
+        <XAxis
+          dataKey="day"
+          tick={{ fill: 'var(--text-3)', fontSize: 9 }}
+          axisLine={false}
+          tickLine={false}
+        />
+        <YAxis
+          domain={[0, 30]}
+          ticks={[0, 10, 20, 30]}
+          tick={{ fill: 'var(--text-3)', fontSize: 9 }}
+          axisLine={false}
+          tickLine={false}
+          width={24}
+        />
+        <Tooltip
+          contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
+          labelStyle={{ color: 'var(--text-2)' }}
+          cursor={{ stroke: 'var(--border)' }}
+        />
+        <Area
+          type="monotone"
+          dataKey="value"
+          stroke="var(--accent)"
+          strokeWidth={2.5}
+          fill="url(#dashTrendFill)"
+          dot={{ r: 3.4, fill: 'var(--bg)', stroke: 'var(--accent)', strokeWidth: 2 }}
+          activeDot={{ r: 5 }}
+        />
+      </AreaChart>
+    </ResponsiveContainer>
   )
 }
 
@@ -434,7 +436,30 @@ export default function Dashboard({ user }) {
           <SectionHeader icon={PieChart} tone="purple" title="Ticket Distribution" />
           <div className="dash-card-fill">
             <div className="dash-mini-donut-wrap">
-              <div className="dash-mini-donut" style={{ background: distributionGradient }}>
+              <div className="dash-mini-donut">
+                <div className="dash-mini-donut-chart">
+                  <MuiPieChart
+                    series={[
+                      {
+                        data: DISTRIBUTION.map((s) => ({
+                          id: s.label,
+                          value: s.value,
+                          label: s.label,
+                          color: DISTRIBUTION_COLOR[s.tone],
+                        })),
+                        innerRadius: 34,
+                        outerRadius: 80,
+                        paddingAngle: 3,
+                        cornerRadius: 4,
+                        valueFormatter: (item) => `${item.value}%`,
+                      },
+                    ]}
+                    width={168}
+                    height={168}
+                    margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+                    hideLegend
+                  />
+                </div>
                 <div className="dash-mini-donut-hole">
                   <span className="dash-mini-donut-total">{DISTRIBUTION_TOTAL}</span>
                   <span className="dash-mini-donut-total-label">Total</span>
@@ -445,13 +470,7 @@ export default function Dashboard({ user }) {
                   <div className="dash-mini-legend-row" key={s.label}>
                     <span className={`dash-mini-dot dash-mini-dot-${s.tone}`} />
                     <span className="dash-mini-legend-label">{s.label}</span>
-                    <div className="dash-mini-legend-stats">
-                      <span className="dash-mini-legend-pct">{s.value}%</span>
-                      <span className={`dash-mini-legend-trend ${s.trend.up ? 'dash-delta-good' : 'dash-delta-bad'}`}>
-                        {s.trend.up ? <ArrowUp size={8} /> : <ArrowDown size={8} />}
-                        {s.trend.label}
-                      </span>
-                    </div>
+                    <span className="dash-mini-legend-pct">{s.value}%</span>
                   </div>
                 ))}
               </div>

@@ -26,6 +26,19 @@ axios.defaults.withCredentials = true
 const AUTH_PATHS = ['/auth/login', '/auth/verify-otp', '/auth/refresh']
 const isAuthEndpoint = (url = '') => AUTH_PATHS.some(path => url.includes(path))
 
+// Reads the `exp` claim straight off the JWT — same "decode, don't verify" stance as the
+// server middleware, since we don't hold the Live API's signing secret either.
+const getTokenExpiryMs = (token) => {
+  try {
+    const payload = token.split('.')[1]
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/')
+    const { exp } = JSON.parse(atob(base64))
+    return exp ? exp * 1000 : null
+  } catch {
+    return null
+  }
+}
+
 const refreshAccessToken = () => {
   if (!_refreshPromise) {
     _refreshPromise = axios.post(`${API}/auth/refresh`, {})
@@ -120,6 +133,36 @@ function App() {
     setUser(null)
     navigate('/login', { replace: true })
   }
+
+  // Proactively catch expiry even if the user is idle and no request happens to
+  // 401 — schedule a check for the exact moment the current token's `exp` hits,
+  // try one silent refresh, and log out to /login if that fails too.
+  useEffect(() => {
+    if (!token) return
+
+    const expiryMs = getTokenExpiryMs(token)
+    if (!expiryMs) return
+
+    const handleExpiry = async () => {
+      try {
+        await refreshAccessToken()
+      } catch {
+        if (!_sessionExpired) {
+          _sessionExpired = true
+          handleLogout()
+        }
+      }
+    }
+
+    const msUntilExpiry = expiryMs - Date.now()
+    if (msUntilExpiry <= 0) {
+      handleExpiry()
+      return
+    }
+
+    const timer = setTimeout(handleExpiry, msUntilExpiry)
+    return () => clearTimeout(timer)
+  }, [token]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Wire the module-level interceptor callbacks to this component's state
   useEffect(() => {
